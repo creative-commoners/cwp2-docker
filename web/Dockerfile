@@ -2,8 +2,6 @@ FROM php:5.6-apache
 MAINTAINER Robbie Averill <robbie@silverstripe.com>
 
 COPY php.ini /usr/local/etc/php/
-COPY startup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh
 
 # Set up Apache and PHP 5.6 with required libraries
 RUN apt-get -y update
