@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # Note, if changing ensure you update html/.env as well
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: silverstripe
+
+  web:
+    depends_on:
+      - db
+    build: ./web
+    ports:
+      - '8000:80'
+    restart: always
+    volumes:
+      - ./html:/var/www/html
+
+volumes:
+  dbdata:
