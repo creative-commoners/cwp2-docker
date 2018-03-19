@@ -6,6 +6,8 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
     restart: always
+    ports:
+      - '3307:3306'
     environment:
       MYSQL_ROOT_PASSWORD: root
       # Note, if changing ensure you update html/.env as well
@@ -19,9 +21,16 @@ services:
     build: ./web
     ports:
       - '8000:80'
-#    restart: always
     volumes:
       - ./html:/var/www/html
+
+  # Auxiliary tools
+  composer:
+    image: composer/composer:php5
+    restart: 'no'
+    command: install --ignore-platform-reqs
+    volumes:
+      - ./html:/app
 
 volumes:
   dbdata:
