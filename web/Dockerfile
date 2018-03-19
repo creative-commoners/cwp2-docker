@@ -2,6 +2,8 @@ FROM php:5.6-apache
 MAINTAINER Robbie Averill <robbie@silverstripe.com>
 
 COPY php.ini /usr/local/etc/php/
+COPY startup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/startup.sh
 
 # Set up Apache and PHP 5.6 with required libraries
 RUN apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ libpng-dev libmcrypt-dev;
@@ -22,15 +24,13 @@ RUN service apache2 restart
 RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer | php \
   && mv composer.phar /usr/local/bin/composer
 
-# Install phpunit and sspak
-RUN composer global require silverstripe/sspak:dev-master phpunit/phpunit:^5.7
+# Install sspak for managing database and asset snapshots
+RUN composer global require silverstripe/sspak:dev-master
 
 # Include composer's global path
 ENV PATH="/root/.composer/bin:${PATH}"
 
 WORKDIR /var/www/html/
+ENTRYPOINT ["startup.sh"]
+CMD ["docker-entrypoint.sh"]
 RUN a2ensite silverstripe.conf
-
-# Install SilverStripe!
-CMD bash -c "composer install --prefer-dist"
-CMD bash -c "vendor/bin/sake dev/build"
