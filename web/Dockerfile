@@ -6,7 +6,8 @@ COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 
 # Set up Apache and PHP 5.6 with required libraries
-RUN apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ libpng-dev libmcrypt-dev;
+RUN apt-get -y update
+RUN apt-get install -y zlib1g-dev libicu-dev g++ libpng-dev libmcrypt-dev;
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl pdo_mysql mysqli gd iconv zip
 
@@ -16,7 +17,7 @@ RUN apt-get install -y git-all
 COPY ./silverstripe.conf /etc/apache2/sites-available/
 COPY ./hosts /etc/hosts
 
-# Start Apache
+# Ensure mod_rewrite is enabled
 RUN a2enmod rewrite
 RUN service apache2 restart
 
@@ -31,6 +32,4 @@ RUN composer global require silverstripe/sspak:dev-master
 ENV PATH="/root/.composer/bin:${PATH}"
 
 WORKDIR /var/www/html/
-ENTRYPOINT ["startup.sh"]
-CMD ["docker-entrypoint.sh"]
 RUN a2ensite silverstripe.conf
