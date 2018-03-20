@@ -5,9 +5,11 @@ COPY php.ini /usr/local/etc/php/
 
 # Set up Apache and PHP 5.6 with required libraries
 RUN apt-get -y update
-RUN apt-get install -y zlib1g-dev libicu-dev g++ libpng-dev libmcrypt-dev
+RUN apt-get install -y zlib1g-dev libicu-dev g++ libpng-dev libjpeg-dev libfreetype6-dev libmcrypt-dev
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl pdo_mysql mysqli gd iconv zip
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install gd
 
 # Copy Apache configuration into place
 COPY ./silverstripe.conf /etc/apache2/sites-available/
